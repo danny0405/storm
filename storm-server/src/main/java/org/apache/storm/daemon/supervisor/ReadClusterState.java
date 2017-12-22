@@ -31,10 +31,8 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import org.apache.storm.DaemonConfig;
 import org.apache.storm.cluster.IStormClusterState;
-import org.apache.storm.cluster.VersionedData;
 import org.apache.storm.daemon.supervisor.Slot.MachineState;
 import org.apache.storm.daemon.supervisor.Slot.TopoProfileAction;
-import org.apache.storm.event.EventManager;
 import org.apache.storm.generated.Assignment;
 import org.apache.storm.generated.ExecutorInfo;
 import org.apache.storm.generated.LocalAssignment;
@@ -54,8 +52,6 @@ public class ReadClusterState implements Runnable, AutoCloseable {
     
     private final Map<String, Object> superConf;
     private final IStormClusterState stormClusterState;
-    private final EventManager syncSupEventManager;
-    private final AtomicReference<Map<String, VersionedData<Assignment>>> assignmentVersions;
     private final Map<Integer, Slot> slots = new HashMap<>();
     private final AtomicInteger readRetry = new AtomicInteger(0);
     private final String assignmentId;
@@ -69,8 +65,6 @@ public class ReadClusterState implements Runnable, AutoCloseable {
     public ReadClusterState(Supervisor supervisor) throws Exception {
         this.superConf = supervisor.getConf();
         this.stormClusterState = supervisor.getStormClusterState();
-        this.syncSupEventManager = supervisor.getEventManger();
-        this.assignmentVersions = new AtomicReference<>(new HashMap<>());
         this.assignmentId = supervisor.getAssignmentId();
         this.iSupervisor = supervisor.getiSupervisor();
         this.localizer = supervisor.getAsyncLocalizer();
